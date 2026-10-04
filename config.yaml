@@ -1,0 +1,39 @@
+# Traffic Signal Violation Detection Configuration
+
+models:
+  vehicle_model: "best.pt"         # Path to trained YOLOv8 vehicle detection model
+  plate_model: "best.pt"           # Path to license plate recognition model (if separate)
+  confidence: 0.25                 # Object detection confidence threshold
+  imgsz: 1280                      # Inference image size
+
+vehicle_classes:
+  - 2  # car
+  - 3  # bus
+  - 4  # truck
+
+signal_calibration:
+  # Traffic light ROI format: [x1, y1, x2, y2]
+  traffic_light_roi: [1750, 35, 1850, 300]
+  
+  # Stop line format: [[start_x, start_y], [end_x, end_y]]
+  stop_line: [[0, 800], [1900, 860]]
+  
+  # Signal state color threshold
+  color_threshold: 0.003
+  
+  # Temporal stability
+  signal_history_len: 7
+  min_red_frames: 3
+
+violation_rules:
+  min_track_frames: 5              # Minimum frames tracked before validating crossing
+  pre_cross_margin: 5              # Vehicle must be at least this distance behind line before crossing
+  post_cross_margin: 0             # Vehicle is past line when distance >= margin
+  max_crossing_jump: 120           # Rejects impossible detector jumps
+  min_downward_motion: 2           # Ensures forward motion towards/past stop line
+
+output:
+  output_json: "violations.json"
+  output_video: "output_tracked.mp4"
+  save_snapshots: true
+  snapshot_dir: "violations_snapshots"
